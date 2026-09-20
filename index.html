@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>浏览器韧性任务队列</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">IndexedDB · Web Worker · Canvas</p>
+          <h1>浏览器韧性任务队列</h1>
+          <p>优先级调度、指数退避、租约并发、死信重入、异常链路和持久化监控。</p>
+        </div>
+        <div id="worker-state" class="worker-state"></div>
+      </header>
+
+      <section class="panel controls">
+        <form id="enqueue-form" class="enqueue-form">
+          <label>类型
+            <select id="task-type">
+              <option value="success">立即成功</option>
+              <option value="flaky" selected>瞬时失败后恢复</option>
+              <option value="terminal">不可重试错误</option>
+              <option value="chained">多层异常链路</option>
+              <option value="slow">长任务 + 心跳续约</option>
+              <option value="crashed">模拟 Worker 崩溃 / 租约过期</option>
+            </select>
+          </label>
+          <label>优先级<input id="priority" type="number" value="5" min="0" max="10" /></label>
+          <label>最大尝试<input id="max-attempts" type="number" value="5" min="1" max="20" /></label>
+          <label>数量<input id="count" type="number" value="1" min="1" max="20" /></label>
+          <button type="submit">投递任务</button>
+        </form>
+        <div class="actions">
+          <button id="load-demo" class="secondary">载入验收演示</button>
+          <button id="requeue-all-dead" class="secondary">全部死信重入</button>
+          <button id="reset-store" class="danger">清空持久数据</button>
+        </div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat"><span data-count="queued">0</span><b>等待</b></article>
+        <article class="stat"><span data-count="retrying">0</span><b>退避</b></article>
+        <article class="stat"><span data-count="running">0</span><b>执行</b></article>
+        <article class="stat"><span data-count="succeeded">0</span><b>成功</b></article>
+        <article class="stat danger-stat"><span data-count="dead">0</span><b>死信</b></article>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="section-title">
+          <h2>实时可视化</h2>
+          <span>每 500ms 从 IndexedDB 拉取状态</span>
+        </div>
+        <canvas id="monitor-canvas"></canvas>
+      </section>
+
+      <div class="lower-grid">
+        <section class="panel table-panel">
+          <div class="section-title"><h2>任务状态与异常链路</h2></div>
+          <div class="table-wrap">
+            <table id="task-table">
+              <thead>
+                <tr>
+                  <th>任务</th><th>类型</th><th>优先级</th><th>尝试</th><th>状态</th>
+                  <th>下次可执行</th><th>持有者</th><th>异常链路</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel events-panel">
+          <div class="section-title"><h2>事件流</h2></div>
+          <ul id="event-list"></ul>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
