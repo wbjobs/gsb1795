@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>可靠任务队列：IndexedDB + Web Worker + Canvas</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="toolbar">
+        <form id="add-task-form" class="field-group">
+          <label>
+            类型
+            <select id="task-type"></select>
+          </label>
+          <label>
+            优先级
+            <select id="task-priority">
+              <option value="0">高</option>
+              <option value="1" selected>普通</option>
+              <option value="2">低</option>
+            </select>
+          </label>
+          <label>
+            最大尝试
+            <input id="max-attempts" type="number" min="1" max="20" value="5">
+          </label>
+          <button type="submit">投递任务</button>
+        </form>
+        <div class="payload-group">
+          <textarea id="task-payload" spellcheck="false"></textarea>
+        </div>
+        <div class="control-group">
+          <button id="seed-demo" type="button">生成演示</button>
+          <button id="pause-queue" type="button">暂停</button>
+          <button id="resume-queue" type="button" disabled>恢复</button>
+          <button id="requeue-all" type="button">全部重入</button>
+          <button id="clear-terminal" type="button">清理终态</button>
+          <label>
+            并发
+            <select id="concurrency">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="6">6</option>
+              <option value="8">8</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="board-wrap">
+          <canvas id="board"></canvas>
+        </section>
+        <aside class="sidebar">
+          <section class="detail-panel" id="task-detail">
+            <p class="muted">点击 Canvas 任务卡片查看租约、退避、结果和异常链路。</p>
+          </section>
+          <section class="events-panel">
+            <h3>实时事件</h3>
+            <div id="event-log"></div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
